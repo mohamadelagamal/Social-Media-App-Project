@@ -66,7 +66,7 @@ class MyApp extends StatelessWidget {
         providers: [
           BlocProvider(
               create: (context) => AppCubit()..changeAppMode(fromShared: true)),
-          BlocProvider(create: (context) => SocialLayoutCubit()..getUserData()),
+          BlocProvider(create: (context) => SocialLayoutCubit()..getUserData()..getPosts()),
         ],
         child: BlocConsumer<AppCubit, AppStates>(
             listener: (context, state) {},

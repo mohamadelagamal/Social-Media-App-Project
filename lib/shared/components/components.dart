@@ -1,7 +1,11 @@
+import 'dart:ffi';
+
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:social_media_application/modules/login/login_screen.dart';
 import 'package:social_media_application/shared/network/local/cache_helper.dart';
+import 'package:social_media_application/shared/styles/icons_broken.dart';
 
 void navigateTo(context, widget) =>
     Navigator.push(context, MaterialPageRoute(builder: (context) => widget));
@@ -37,30 +41,32 @@ Widget defaultTextField({
   required String? Function(String?) validate,
   required String label,
   required IconData prefix,
-  bool isPassword =false,
+  bool isPassword = false,
   IconData? suffix,
   VoidCallback? suffixPressed,
   required BuildContext context,
-
-}) => TextFormField(
-  controller: controller,
-  keyboardType: type,
-  obscureText: isPassword,
-  validator: validate,
-  onFieldSubmitted: submit,
-  onChanged: change,
-  style: Theme.of(context).textTheme.bodyText2, // Add this line
-  decoration: InputDecoration(
-    labelText: label,
-    labelStyle: Theme.of(context).textTheme.bodyText2, // Add this line
-    border: OutlineInputBorder(),
-    prefixIcon: Icon(prefix),
-    suffixIcon: IconButton(
-      onPressed: suffixPressed,
-      icon: Icon(suffix),
-    ),
-  ),
-);
+  int? maxLines=1,
+}) =>
+    TextFormField(
+      controller: controller,
+      keyboardType: type,
+      obscureText: isPassword,
+      validator: validate,
+      onFieldSubmitted: submit,
+      maxLines: maxLines,
+      onChanged: change,
+      style: Theme.of(context).textTheme.bodyText2, // Add this line
+      decoration: InputDecoration(
+        labelText: label,
+        labelStyle: Theme.of(context).textTheme.bodyText2, // Add this line
+        border: OutlineInputBorder(),
+        prefixIcon: Icon(prefix),
+        suffixIcon: IconButton(
+          onPressed: suffixPressed,
+          icon: Icon(suffix),
+        ),
+      ),
+    );
 
 enum ToastStates { SUCCESS, ERROR, WARNING }
 
@@ -79,6 +85,7 @@ Color chooseToastColor(ToastStates state) {
   }
   return color;
 }
+
 // show Flutter toast
 void showToast({
   required String text,
@@ -93,19 +100,41 @@ void showToast({
       textColor: Colors.white,
       fontSize: 16.0,
     );
-void signOut({required context}){
+void signOut({required context}) {
   // sign out
   CacheHelper.removeData(key: 'token').then((value) => {
-    if(value)
-      {
-        navigateAndFinish(context, SocialLoginScreen())
-      }
-
-  });
+        if (value) {navigateAndFinish(context, SocialLoginScreen())}
+      });
 }
+
 void printFullText(String text) {
   final pattern = RegExp('.{1,800}'); // 800 is the size of each chunk
   pattern.allMatches(text).forEach((match) {
     print(match.group(0));
   });
 }
+
+PreferredSizeWidget defaultAppBar({
+  required BuildContext context,
+  required String title,
+  List<Widget> actions = const <Widget>[],
+}) =>
+    AppBar(
+      title: Text('$title'),
+      leading: IconButton(
+        onPressed: () {
+          Navigator.pop(context);
+        },
+        icon: Icon(IconBroken.Arrow___Left_2),
+      ),
+      actions: actions,
+      titleSpacing: 0.0,
+    );
+Widget defaultTextButton({
+  required VoidCallback function,
+  required String text,
+}) =>
+    TextButton(
+      onPressed: function,
+      child: Text(text.toUpperCase(),style: TextStyle(color: Colors.blue),),
+    );

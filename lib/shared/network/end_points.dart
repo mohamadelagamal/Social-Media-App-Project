@@ -10,3 +10,6 @@ const UPDATE_PROFILE = 'update-profile';
 const SEARCH = 'products/search';
 const USER_COLLECTION = 'users';
 const UID_USER = 'id';
+const POST_COLLECTION = 'posts';
+const LIKES_COLLECTION = 'likes';
+const COMMENT_COLLECTION='comment';

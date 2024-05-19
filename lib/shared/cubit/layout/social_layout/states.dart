@@ -81,3 +81,43 @@ class SocialGetUserErrorState extends SocialLayoutStates {
   final String error;
   SocialGetUserErrorState(this.error);
 }
+// profile image state
+class SocialProfileImagePickedSuccessState extends SocialLayoutStates {}
+class SocialProfileImagePickedErrorState extends SocialLayoutStates {}
+
+// cover image state
+class SocialCoverImagePickedSuccessState extends SocialLayoutStates {}
+class SocialCoverImagePickedErrorState extends SocialLayoutStates {}
+
+// upload image state
+class SocialUploadProfileImageSuccessState extends SocialLayoutStates {}
+class SocialUploadProfileImageErrorState extends SocialLayoutStates {}
+
+// Create Post State
+class SocialCreatePostLoadingState extends SocialLayoutStates {}
+class SocialCreatePostSuccessState extends SocialLayoutStates {}
+class SocialCreatePostErrorState extends SocialLayoutStates {}
+// get Posts State picker
+class SocialPostImagePickedSuccessState extends SocialLayoutStates {}
+class SocialPostImagePickedErrorState extends SocialLayoutStates {}
+//remove Post Image State
+class SocialRemovePostImageState extends SocialLayoutStates {}
+
+// get Posts user State
+class SocialGetPostsUserLoadingState extends SocialLayoutStates {}
+class SocialGetPostsUserSuccessState extends SocialLayoutStates {}
+class SocialGetPostsUserErrorState extends SocialLayoutStates {}
+
+// create like posts
+class SocialCreateLikePostsSuccessState extends SocialLayoutStates {}
+class SocialCreateLikePostsErrorState extends SocialLayoutStates {
+  final String error;
+  SocialCreateLikePostsErrorState(this.error);
+}
+// get All users
+class SocialGetAllUsersLoadingState extends SocialLayoutStates {}
+class SocialGetAllUsersSuccessState extends SocialLayoutStates {}
+class SocialGetAllUsersErrorState extends SocialLayoutStates {
+  final String error;
+  SocialGetAllUsersErrorState(this.error);
+}

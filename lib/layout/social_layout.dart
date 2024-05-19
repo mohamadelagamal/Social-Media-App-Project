@@ -65,7 +65,9 @@ class SocialLayout extends StatelessWidget {
                       icon: Icon(IconBroken.Chat),
                       color: cubit.currentIndex == 1 ? Colors.red : Colors.grey,
                       onPressed: () {
+                        cubit.getAllUsers();
                         cubit.changeBottomNav(1);
+
                       },
                     ),
                     SizedBox(

@@ -1,58 +1,44 @@
+import 'package:conditional_builder_null_safety/conditional_builder_null_safety.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:social_media_application/models/post/post_model.dart';
+import 'package:social_media_application/shared/cubit/layout/social_layout/cubit.dart';
+import 'package:social_media_application/shared/cubit/layout/social_layout/states.dart';
 import 'package:social_media_application/shared/styles/icons_broken.dart';
 
 class FeedsScreen extends StatelessWidget {
-  const FeedsScreen({super.key});
+
+
+  final TextEditingController commentController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      physics: BouncingScrollPhysics(),
-      child: Column(children: [
-        Card(
-          clipBehavior: Clip.antiAliasWithSaveLayer,
-          elevation: 5.0,
-          margin: EdgeInsets.all(10.0),
-          child: Stack(
-            alignment: AlignmentDirectional.bottomEnd,
-            children: [
-              Image(
-                image: NetworkImage(
-                    'https://th.bing.com/th/id/R.292821abb1ef8ec8768033c33e22a367?rik=TM7g%2bhoxYSPWeg&riu=http%3a%2f%2ffreephotosforcommercialuse.com%2fwp-content%2fuploads%2f2015%2f10%2fFreePhotosForCommercialUse.com-free-image-free-use-4.jpg&ehk=Z7OnpyK3RuS2E0jjBs87gJG9ILqgEl1yum8laOQh2zA%3d&risl=&pid=ImgRaw&r=0'),
-                fit: BoxFit.cover,
-                height: 200,
-                width: double.infinity,
+    return BlocConsumer<SocialLayoutCubit,SocialLayoutStates>(
+      listener: (context, state) {},
+      builder: (context,state){
+        var cubit = SocialLayoutCubit.get(context);
+        return ConditionalBuilder(condition: cubit.posts.length>0 , builder: (context)=>SingleChildScrollView(
+          physics: BouncingScrollPhysics(),
+          child: Column(children: [
+            ListView.separated(
+              shrinkWrap: true,
+              physics: NeverScrollableScrollPhysics(),
+              itemBuilder: (context, index) => buildPostItem(cubit.posts![index],context,index),
+              separatorBuilder: (context, index) => SizedBox(
+                height: 10.0,
               ),
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Text(
-                  'communicate with friends',
-                  style: Theme.of(context).textTheme.subtitle1!.copyWith(
-                    color: Colors.white,
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
-        ListView.separated(
-            shrinkWrap: true,
-            physics: NeverScrollableScrollPhysics(),
-            itemBuilder: (context, index) => buildPostItem(context),
-            separatorBuilder: (context, index) => SizedBox(
-              height: 10.0,
+              itemCount: cubit.posts!.length,
             ),
-            itemCount: 10,
-          ),
-        SizedBox(
-          height: 8.0,)
-
-      ]),
+            SizedBox(
+              height: 8.0,)
+          ]),
+        ), fallback: (context)=>Center(child: CircularProgressIndicator(),),);
+      },
     );
   }
 
-  Widget buildPostItem(context)=>Card(
+  Widget buildPostItem(PostModel model,context,index)=>Card(
       clipBehavior: Clip.antiAliasWithSaveLayer,
       elevation: 10.0,
       color: Theme.of(context).cardTheme.color,
@@ -63,13 +49,14 @@ class FeedsScreen extends StatelessWidget {
       child: Padding(
         padding: const EdgeInsets.all(10.0),
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Row(
               children: [
                 CircleAvatar(
                   radius: 25.0,
                   backgroundImage: NetworkImage(
-                      'https://passportsymphony.com/wp-content/uploads/2017/12/tree-2281585_1920.jpg'
+                      '${model!.photoUrl}'
                   ),
                 ),
                 SizedBox(
@@ -81,7 +68,7 @@ class FeedsScreen extends StatelessWidget {
                     Row(
                       children: [
                         Text(
-                          'Mohamed',
+                          '${model.name}',
                           style: TextStyle(
                             height: 1.4,
                             color: Theme.of(context).textTheme.bodyText1!.color,
@@ -98,7 +85,7 @@ class FeedsScreen extends StatelessWidget {
                       ],
                     ),
                     Text(
-                      'October 20, 2021 at 10:00 pm',
+                      '${model.dateTime}',
                       style: Theme.of(context).textTheme.caption!.copyWith(
                           color: Theme.of(context).textTheme.bodyText1!.color,
                       ),
@@ -130,7 +117,7 @@ class FeedsScreen extends StatelessWidget {
               ),
             ),
             Text(
-              'Hello, How are you? I hope you are doing well. I am writing this post to tell you that I am going to travel to the United States next week. I hope to see you soon.',
+              '${model.text}',
               style: Theme.of(context).textTheme.subtitle1!.copyWith(
                 color: Theme.of(context).textTheme.bodyText1!.color,
                 fontSize: 14.0,
@@ -191,15 +178,21 @@ class FeedsScreen extends StatelessWidget {
               ),
             ),
             // set image with radius
-            Container(
-              height: 200.0,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(4.0),
-                image: DecorationImage(
-                  image: NetworkImage(
-                    'https://th.bing.com/th/id/OIP.yM92vAHHF_FRtW4p3ffzOQHaEK?rs=1&pid=ImgDetMain',
+            if(model.postImage!='')
+            Padding(
+              padding: const EdgeInsets.only(
+                top: 15.0
+              ),
+              child: Container(
+                height: 200.0,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(4.0),
+                  image: DecorationImage(
+                    image: NetworkImage(
+                      '${model.postImage}',
+                    ),
+                    fit: BoxFit.cover,
                   ),
-                  fit: BoxFit.cover,
                 ),
               ),
             ),
@@ -228,7 +221,7 @@ class FeedsScreen extends StatelessWidget {
                               width: 5.0,
                             ),
                             Text(
-                              '1200',
+                              '${SocialLayoutCubit.get(context).likes[index] ?? 0 }',
                               style: Theme.of(context).textTheme.caption!.copyWith(
                                 color: Theme.of(context).textTheme.bodyText1!.color,
                               ),
@@ -258,7 +251,7 @@ class FeedsScreen extends StatelessWidget {
                               width: 5.0,
                             ),
                             Text(
-                              '25 Comment',
+                              '0 Comment',
                               style: Theme.of(context).textTheme.caption!.copyWith(
                                 color: Theme.of(context).textTheme.bodyText1!.color,
                               ),
@@ -292,7 +285,7 @@ class FeedsScreen extends StatelessWidget {
                         CircleAvatar(
                           radius: 18.0,
                           backgroundImage: NetworkImage(
-                              'https://passportsymphony.com/wp-content/uploads/2017/12/tree-2281585_1920.jpg'
+                              '${SocialLayoutCubit.get(context).userModel!.photoUrl}'
                           ),
                         ),
                         SizedBox(
@@ -300,17 +293,25 @@ class FeedsScreen extends StatelessWidget {
                         ),
                         Expanded(
                           child: InkWell(
-                            onTap: (){},
+                            onTap: (){
+                              if (commentController.text.isNotEmpty) {
+                                SocialLayoutCubit.get(context).createComment(commentController.text);
+                                commentController.clear();
+                              }
+                            },
                             child: Container(
                               padding: EdgeInsets.all(10.0),
                               decoration: BoxDecoration(
                                 color: Theme.of(context).cardTheme.color,
 
                               ),
-                              child: Text(
-                                'write a comment...',
-                                style: Theme.of(context).textTheme.caption!.copyWith(
-                                  color: Theme.of(context).textTheme.bodyText1!.color,
+                              child:  TextField(
+                                controller: commentController,
+                                decoration: InputDecoration(
+                                  hintText: 'write a comment...',
+                                  hintStyle: Theme.of(context).textTheme.caption!.copyWith(
+                                    color: Theme.of(context).textTheme.bodyText1!.color,
+                                  ),
                                 ),
                               ),
                             ),
@@ -324,7 +325,9 @@ class FeedsScreen extends StatelessWidget {
                   width: 10.0,
                 ),
                 InkWell(
-                  onTap: (){},
+                  onTap: (){
+                    SocialLayoutCubit.get(context).likePosts(SocialLayoutCubit.get(context).postsId[index]);
+                  },
                   child: Padding(
                     padding: const EdgeInsets.symmetric(
                       vertical: 8.0,
@@ -357,3 +360,29 @@ class FeedsScreen extends StatelessWidget {
       )
   );
 }
+// Card(
+// clipBehavior: Clip.antiAliasWithSaveLayer,
+// elevation: 5.0,
+// margin: EdgeInsets.all(10.0),
+// child: Stack(
+// alignment: AlignmentDirectional.bottomEnd,
+// children: [
+// Image(
+// image: NetworkImage(
+// 'https://th.bing.com/th/id/R.292821abb1ef8ec8768033c33e22a367?rik=TM7g%2bhoxYSPWeg&riu=http%3a%2f%2ffreephotosforcommercialuse.com%2fwp-content%2fuploads%2f2015%2f10%2fFreePhotosForCommercialUse.com-free-image-free-use-4.jpg&ehk=Z7OnpyK3RuS2E0jjBs87gJG9ILqgEl1yum8laOQh2zA%3d&risl=&pid=ImgRaw&r=0'),
+// fit: BoxFit.cover,
+// height: 200,
+// width: double.infinity,
+// ),
+// Padding(
+// padding: const EdgeInsets.all(8.0),
+// child: Text(
+// 'communicate with friends',
+// style: Theme.of(context).textTheme.subtitle1!.copyWith(
+// color: Colors.white,
+// ),
+// ),
+// ),
+// ],
+// ),
+// ),
