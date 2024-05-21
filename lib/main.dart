@@ -1,6 +1,6 @@
-
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:social_media_application/firebase_options.dart';
@@ -17,14 +17,13 @@ import 'shared/cubit/app/states.dart';
 import 'shared/network/local/cache_helper.dart';
 import 'shared/network/remote/dio_helper.dart';
 
-void main() async{
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   // Initialize Firebase
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform
-  );
- // This is the first line of the main function
-  Bloc.observer = MyBlocObserver(); // MyBlocObserver is a custom BlocObserver used to observe the state changes in the app
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  // This is the first line of the main function
+  Bloc.observer =
+      MyBlocObserver(); // MyBlocObserver is a custom BlocObserver used to observe the state changes in the app
   // initialize the Dio package
   // Dio means Data I/O, it is a powerful Http client for Dart,
   // which supports Interceptors, Global configuration, FormData,
@@ -35,18 +34,26 @@ void main() async{
   bool? isDark = CacheHelper.getData(key: 'isDark');
   bool? onBoarding = CacheHelper.getData(key: 'onBoarding');
   token = await CacheHelper.getData(key: 'uId');
-
   print('token: $token');
+  var tokenFirebase = await FirebaseMessaging.instance.getToken();
+  print('tokenFirebase:$tokenFirebase');
+  FirebaseMessaging.onMessage.listen((event) {
+    print('onMessage');
+    print(event.data.toString());
+  });
+  FirebaseMessaging.onMessageOpenedApp.listen((event) {
+    print('onMessageOpenedApp');
+    print(event.data.toString());
+  });
 
-
-
-  if(onBoarding!=null){
-    if(token != null) widget = SocialLayout();
-    else widget = SocialLoginScreen();
-  }else{
+  if (onBoarding != null) {
+    if (token != null)
+      widget = SocialLayout();
+    else
+      widget = SocialLoginScreen();
+  } else {
     widget = OnBoardingScreen();
   }
-
 
   runApp(MyApp(
     isDark: isDark ?? false,
@@ -65,8 +72,12 @@ class MyApp extends StatelessWidget {
     return MultiBlocProvider(
         providers: [
           BlocProvider(
-              create: (context) => AppCubit()..changeAppMode(fromShared: true)),
-          BlocProvider(create: (context) => SocialLayoutCubit()..getUserData()..getPosts()),
+              create: (context) =>
+                  AppCubit()..changeAppMode(fromShared: false)),
+          BlocProvider(
+              create: (context) => SocialLayoutCubit()
+                ..getUserData()
+                ..getPosts()),
         ],
         child: BlocConsumer<AppCubit, AppStates>(
             listener: (context, state) {},
@@ -76,7 +87,9 @@ class MyApp extends StatelessWidget {
                 title: 'Flutter Demo',
                 theme: lightTheme,
                 darkTheme: darkTheme,
-                themeMode: AppCubit.get(context).isDark ? ThemeMode.dark : ThemeMode.light,
+                themeMode: AppCubit.get(context).isDark
+                    ? ThemeMode.dark
+                    : ThemeMode.light,
                 home: startWidget,
               );
             }));

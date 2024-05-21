@@ -1,40 +1,50 @@
 import 'package:conditional_builder_null_safety/conditional_builder_null_safety.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:social_media_application/modules/messages/messages_screen.dart';
 import 'package:social_media_application/shared/cubit/layout/social_layout/cubit.dart';
 import 'package:social_media_application/shared/cubit/layout/social_layout/states.dart';
+
+import '../../shared/components/components.dart';
 
 class ChatsScreen extends StatelessWidget {
   const ChatsScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return BlocConsumer<SocialLayoutCubit, SocialLayoutStates>(
-      listener: (context, state) {},
-      builder: (context, state) {
-        var cubit = SocialLayoutCubit.get(context);
-        return ConditionalBuilder(
-          condition: cubit.users.length > 0,
-          builder: (context) => ListView.separated(
-            physics: BouncingScrollPhysics(),
-            itemBuilder: (context, index) => buildChatItem(context, cubit.users[index]),
-            separatorBuilder: (context, index) => Padding(
-              padding: const EdgeInsetsDirectional.only(start: 20.0),
-              child: Container(
-                width: double.infinity,
-                height: 1.0,
-                color: Colors.grey[300],
+    return Builder(
+      builder: (context) {
+        SocialLayoutCubit.get(context).getAllUsers();
+        return BlocConsumer<SocialLayoutCubit, SocialLayoutStates>(
+          listener: (context, state) {},
+          builder: (context, state) {
+            var cubit = SocialLayoutCubit.get(context);
+            return ConditionalBuilder(
+              condition: cubit.users.length >= 0,
+              builder: (context) => ListView.separated(
+                physics: BouncingScrollPhysics(),
+                itemBuilder: (context, index) => buildChatItem(context, cubit.users[index]),
+                separatorBuilder: (context, index) => Padding(
+                  padding: const EdgeInsetsDirectional.only(start: 20.0),
+                  child: Container(
+                    width: double.infinity,
+                    height: 1.0,
+                    color: Colors.grey[300],
+                  ),
+                ),
+                itemCount: cubit.users.length,
               ),
-            ),
-            itemCount: cubit.users.length,
-          ),
-          fallback: (context) => Center(child: CircularProgressIndicator()),
+              fallback: (context) => Center(child: CircularProgressIndicator()),
+            );
+          },
         );
-      },
+      }
     );
   }
   Widget buildChatItem(context,model)=>InkWell(
-    onTap: (){},
+    onTap: (){
+      navigateTo(context, MessagesScreen(userModel: model,));
+    },
     child: Padding(
       padding: const EdgeInsets.all(20.0),
       child: Row(

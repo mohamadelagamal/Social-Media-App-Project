@@ -14,27 +14,34 @@ class FeedsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocConsumer<SocialLayoutCubit,SocialLayoutStates>(
-      listener: (context, state) {},
-      builder: (context,state){
-        var cubit = SocialLayoutCubit.get(context);
-        return ConditionalBuilder(condition: cubit.posts.length>0 , builder: (context)=>SingleChildScrollView(
-          physics: BouncingScrollPhysics(),
-          child: Column(children: [
-            ListView.separated(
-              shrinkWrap: true,
-              physics: NeverScrollableScrollPhysics(),
-              itemBuilder: (context, index) => buildPostItem(cubit.posts![index],context,index),
-              separatorBuilder: (context, index) => SizedBox(
-                height: 10.0,
-              ),
-              itemCount: cubit.posts!.length,
-            ),
-            SizedBox(
-              height: 8.0,)
-          ]),
-        ), fallback: (context)=>Center(child: CircularProgressIndicator(),),);
-      },
+    return Builder(
+      builder: (context) {
+        SocialLayoutCubit.get(context).getPosts();
+        return BlocConsumer<SocialLayoutCubit,SocialLayoutStates>(
+          listener: (context, state) {},
+          builder: (context,state){
+            var cubit = SocialLayoutCubit.get(context);
+            return ConditionalBuilder(
+              condition: cubit.posts.length>0 ,
+              builder: (context)=>SingleChildScrollView(
+              physics: BouncingScrollPhysics(),
+              child: Column(children: [
+                ListView.separated(
+                  shrinkWrap: true,
+                  physics: NeverScrollableScrollPhysics(),
+                  itemBuilder: (context, index) => buildPostItem(cubit.posts![index],context,index),
+                  separatorBuilder: (context, index) => SizedBox(
+                    height: 10.0,
+                  ),
+                  itemCount: cubit.posts!.length,
+                ),
+                SizedBox(
+                  height: 8.0,)
+              ]),
+            ), fallback: (context)=>Center(child: CircularProgressIndicator(),),);
+          },
+        );
+      }
     );
   }
 

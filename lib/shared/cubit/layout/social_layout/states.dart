@@ -121,3 +121,16 @@ class SocialGetAllUsersErrorState extends SocialLayoutStates {
   final String error;
   SocialGetAllUsersErrorState(this.error);
 }
+
+// message state
+class SocialSendMessageSuccessState extends SocialLayoutStates {}
+class SocialSendMessageErrorState extends SocialLayoutStates {
+  final String error;
+  SocialSendMessageErrorState(this.error);
+}
+class SocialGetMessagesLoadingState extends SocialLayoutStates {}
+class SocialGetMessagesSuccessState extends SocialLayoutStates {}
+class SocialGetMessagesErrorState extends SocialLayoutStates {
+  final String error;
+  SocialGetMessagesErrorState(this.error);
+}
